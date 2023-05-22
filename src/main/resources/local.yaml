@@ -1,0 +1,12 @@
+http:
+ host: "localhost"
+ port: '8089'
+ 
+
+
+db:
+  host: "localhost"
+  port: "3306"
+  user: "root"
+  pass: "Kodadnadia-24"
+  dbname: "nadia"

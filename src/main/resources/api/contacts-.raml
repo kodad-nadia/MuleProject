@@ -1,0 +1,69 @@
+#%RAML 1.0
+title: Contacts API
+version: v1
+
+types: 
+        Contact: !include datatype/Contactlist.raml
+
+/contact:
+  get:
+    description: Returns a list of all contacts
+    responses:
+      200:
+        body:
+          application/json:
+            type: Contact []
+            examples:
+              output: !include examples/contactexample.raml
+    queryParameters:
+      limit:
+        description: The maximum number of results to return
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+    
+              
+  /{firstname}:
+    uriParameters:
+      firstname:
+        type: string
+        required: true
+    get:
+      responses:
+        200:
+          body:
+            application/json:
+              type: Contact
+              examples:
+               output: !include examples/exampleFirstName.raml
+  post:
+    description: Creates a new contact
+    body:
+      application/json:
+        type: Contact 
+    responses:
+      201:
+        description: Contact created
+        body:
+          application/json:
+            type: Contact
+      400:
+        description: Bad request
+      500:
+        description: Internal server error
+
+  put: 
+      queryParameters:
+       update:
+        type: string
+        required: true
+      responses:
+        200:
+          body:
+            application/json:
+              type: Contact
+
+
+
+

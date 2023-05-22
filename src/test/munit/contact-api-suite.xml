@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="contact-api-suite.xml" />
+	<munit:test name="contact-apiFlow-test" doc:id="03a3705a-538a-4ea2-85a3-a8216aac894e" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Select data from Contacts" doc:id="2d0f3fbc-c335-4d58-ab78-5a12e44c8e41" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="b4edbc35-5d32-42c3-856f-7dd8d3f9f843" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java  --- readUrl('classpath://contactapiFlowtest\mock_payload.dwl')]" mediaType="application/java " encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://contactapiFlowtest\mock_variable_.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy DB data : Contacts" doc:id="72593a9a-d38e-4cb1-a61f-9ca09bc33283" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="676a96c2-fd4e-4245-8862-9452ab857aa2" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="7f571788-125a-4ac3-8550-9a558cf157d9" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import contactapiFlowtest::spy_assert_payload2
+---
+spy_assert_payload2::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="96ccbeb6-ecbc-46cb-9233-a0f4f937caa5" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import contactapiFlowtest::spy_assert_payload3
+---
+spy_assert_payload3::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit:set-event doc:name="Set Input" doc:id="7dcb3ead-c694-4611-a895-84c615edffb7" >
+				<munit:payload value="#[readUrl('classpath://contactapiFlowtest\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://contactapiFlowtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://contactapiFlowtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to contact-apiFlow" doc:id="7ff643f8-3f78-4747-b8cd-2b44e1a83972" name="contact-apiFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="82b53cb4-8d5c-4996-bc4b-2e74fdc91185" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import contactapiFlowtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify DB data : Contacts" doc:id="2258b7f5-0c06-464b-ac6b-635a1ee6de6a" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="676a96c2-fd4e-4245-8862-9452ab857aa2" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="contact-apiFlow1-test" doc:id="7258545c-a8f7-4942-984b-18973093c0d1">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock Select data from Contacts by firstname" doc:id="4af97ad3-d794-4632-b5ff-756f642e922b" processor="db:select">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="6c09bd66-3452-4d9c-9dab-dd1dbccb23c3" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/java  --- readUrl('classpath://contactapiFlow1test\mock_payload1.dwl')]" mediaType="application/java " encoding="UTF-8" />
+					<munit-tools:variables>
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://contactapiFlow1test\mock_variable_1.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy contacts by firstname" doc:id="83565f95-e2ee-46b3-9bf0-371ae67464c7" processor="ee:transform">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="3339de96-a5d8-4bf0-920f-6b4f30925eef" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call>
+					<munit-tools:assert doc:name="Assert payload" doc:id="0db3e271-2f63-4b11-bb91-186d1c3878d5" message="The payload does not match">
+						<munit-tools:that><![CDATA[#[%dw 2.0
+import contactapiFlow1test::spy_assert_payload
+---
+spy_assert_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call>
+					<munit-tools:assert doc:name="Assert payload" doc:id="5d4ebb6c-c568-4e60-8edc-98c2e7fae540" message="The payload does not match">
+						<munit-tools:that><![CDATA[#[%dw 2.0
+import contactapiFlow1test::spy_assert_payload1
+---
+spy_assert_payload1::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit:set-event doc:name="Set Input" doc:id="24a578a0-e5e1-4149-a9d1-a9079f991795">
+				<munit:payload value="#[readUrl('classpath://contactapiFlow1test\set-event_payload1.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://contactapiFlow1test\set-event_attributes1.dwl')]" />
+				<munit:variables>
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://contactapiFlow1test\set-event_variable_1.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution>
+			<flow-ref doc:name="Flow-ref to contact-apiFlow1" doc:id="9a5e919b-5569-49ae-8d5a-495efbad7bbc" name="contact-apiFlow1" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert doc:name="Assert payload" doc:id="7df8cc66-b02d-49b3-8cb1-bbb40200c8c1" message="The payload does not match">
+				<munit-tools:that><![CDATA[#[%dw 2.0
+import contactapiFlow1test::assert_expression_payload1
+---
+assert_expression_payload1::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify contacts by firstname" doc:id="94761d0d-dc30-42db-a89e-2666ebdae191" processor="ee:transform" times="1">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="3339de96-a5d8-4bf0-920f-6b4f30925eef" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="contact-apiFlow2-test" doc:id="2e640d03-f29a-48b2-93a6-5a902ef565d2">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock insert in the Contacts DB new contacts" doc:id="d5514103-dc76-42e8-acd9-d2588be6fe61" processor="db:insert">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="f1be3440-d18d-400a-85ac-a9122eeaff3b" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/java  --- readUrl('classpath://contactapiFlow2test\mock_payload.dwl')]" mediaType="application/java " encoding="UTF-8" />
+					<munit-tools:variables>
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://contactapiFlow2test\mock_variable_.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy new contacts" doc:id="36f6e7c6-7c45-4381-b269-fd0b8ecc75e3" processor="ee:transform">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="d77cc3c5-8cf3-4d73-b384-619a0ace418c" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call>
+					<munit-tools:assert doc:name="Assert payload" doc:id="b1f44357-ece3-49cf-8bd0-83be8c2b1943" message="The payload does not match">
+						<munit-tools:that><![CDATA[#[%dw 2.0
+import contactapiFlow2test::spy_assert_payload
+---
+spy_assert_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call>
+					<munit-tools:assert doc:name="Assert payload" doc:id="99740663-864f-4f05-8010-c55d3a9d8829" message="The payload does not match">
+						<munit-tools:that><![CDATA[#[%dw 2.0
+import contactapiFlow2test::spy_assert_payload1
+---
+spy_assert_payload1::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit:set-event doc:name="Set Input" doc:id="4eb6d005-9f7a-4bd5-9216-2ff9ef4af96a">
+				<munit:payload value="#[output application/json  --- readUrl('classpath://contactapiFlow2test\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json " />
+				<munit:attributes value="#[readUrl('classpath://contactapiFlow2test\set-event_attributes.dwl')]" />
+				<munit:variables>
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://contactapiFlow2test\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution>
+			<flow-ref doc:name="Flow-ref to contact-apiFlow2" doc:id="ca6b8601-afb7-454c-8ae9-33f9532101bf" name="contact-apiFlow2" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert doc:name="Assert payload" doc:id="c189774b-c8ab-4e79-90ae-3063ed5d620f" message="The payload does not match">
+				<munit-tools:that><![CDATA[#[%dw 2.0
+import contactapiFlow2test::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify new contacts" doc:id="ad83cfb2-63bc-4e31-8a80-86d4250d7f71" processor="ee:transform" times="1">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="d77cc3c5-8cf3-4d73-b384-619a0ace418c" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="contact-apiFlow3-test" doc:id="c187788d-633a-4342-8e58-451952dc15e8">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock update old Contacts in the Contacts DB" doc:id="46b663b8-0ab6-4d9b-ac2a-b6fe2033181b" processor="db:update">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="900b82b4-4a3f-4a0c-93d3-ed12806c6b49" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/java  --- readUrl('classpath://contactapiFlow3test\mock_payload.dwl')]" mediaType="application/java " encoding="UTF-8" />
+					<munit-tools:variables>
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://contactapiFlow3test\mock_variable_.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy update contacts" doc:id="0d231c7a-8081-4d8e-9c69-e7fd4a54eeb2" processor="ee:transform">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="3afee4a7-dd3d-47e1-b923-71079953e928" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call>
+					<munit-tools:assert doc:name="Assert payload" doc:id="46d00cad-3973-44d6-81c0-4e08bfbeb516" message="The payload does not match">
+						<munit-tools:that><![CDATA[#[%dw 2.0
+import contactapiFlow3test::spy_assert_payload
+---
+spy_assert_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call>
+					<munit-tools:assert doc:name="Assert payload" doc:id="b0744903-718e-43e5-8ae3-af6bf7b18ca8" message="The payload does not match">
+						<munit-tools:that><![CDATA[#[%dw 2.0
+import contactapiFlow3test::spy_assert_payload1
+---
+spy_assert_payload1::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit:set-event doc:name="Set Input" doc:id="1e030c08-9d9d-4744-b2ae-c61de4641e4b">
+				<munit:payload value="#[output application/json  --- readUrl('classpath://contactapiFlow3test\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json " />
+				<munit:attributes value="#[readUrl('classpath://contactapiFlow3test\set-event_attributes.dwl')]" />
+				<munit:variables>
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://contactapiFlow3test\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution>
+			<flow-ref doc:name="Flow-ref to contact-apiFlow3" doc:id="33c78eef-810c-4b1d-a9ce-102392b2df1f" name="contact-apiFlow3" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert doc:name="Assert payload" doc:id="80aee302-d3c5-4c90-8a07-d92d53993778" message="The payload does not match">
+				<munit-tools:that><![CDATA[#[%dw 2.0
+import contactapiFlow3test::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify update contacts" doc:id="b0afbeea-f2e9-475d-a964-b45b6c2cb480" processor="ee:transform" times="1">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="3afee4a7-dd3d-47e1-b923-71079953e928" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

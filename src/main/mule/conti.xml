@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="contact-apiFlow" doc:id="e5d61fbc-4a17-4b48-bb75-0fdfd22e69cb" >
+		<db:select doc:name="Select data from Contacts" doc:id="b4edbc35-5d32-42c3-856f-7dd8d3f9f843" config-ref="Database_Config1">
+			<db:sql ><![CDATA[SELECT * FROM Contacts]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="DB data : Contacts" doc:id="676a96c2-fd4e-4245-8862-9452ab857aa2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Contacts" doc:id="ad84af5b-a66a-4c05-b4ef-e6ebfff7f807" />
+	</flow>
+	<flow name="contact-apiFlow1" doc:id="ee3f13f2-e1eb-442f-b2be-c591d25aa9af" >
+		<db:select doc:name="Select data from Contacts by firstname" doc:id="6c09bd66-3452-4d9c-9dab-dd1dbccb23c3" config-ref="Database_Config1">
+			<db:sql ><![CDATA[SELECT * FROM Contacts 
+where firstname = :name
+]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{'name':attributes.uriParams.'firstname'}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="contacts by firstname" doc:id="3339de96-a5d8-4bf0-920f-6b4f30925eef" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="contact-apiFlow2" doc:id="a10b7fd7-568d-4f42-850a-9ac3b189f550" >
+		<db:insert doc:name="insert in the Contacts DB new contacts" doc:id="f1be3440-d18d-400a-85ac-a9122eeaff3b" config-ref="Database_Config1">
+			<db:sql ><![CDATA[INSERT INTO contacts (firstname, lastname, email, telephone) 
+VALUES (:firstname, :lastname, :email, :telephone);]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+    firstname: payload.firstname,
+    lastname: payload.lastname,
+    email: payload.email,
+    telephone: payload.telephone
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="new contacts" doc:id="d77cc3c5-8cf3-4d73-b384-619a0ace418c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="contact-apiFlow3" doc:id="a06c6a2c-2be9-4b3a-b918-7daf74df2791" >
+		<db:update doc:name="update old Contacts in the Contacts DB" doc:id="900b82b4-4a3f-4a0c-93d3-ed12806c6b49" config-ref="Database_Config1">
+			<db:sql ><![CDATA[UPDATE contacts
+SET firstname = :firstname, lastname = :lastname, email = :email, telephone = :telephone 
+WHERE firstname = :firstname ]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+         "firstname" :attributes.queryParams."update",
+         "lastname" :payload.lastname,
+         "email" :payload.email,
+         "telephone" :payload.telephone,
+         "id" : payload.id,
+        
+       
+    }]]]></db:input-parameters>
+		</db:update>
+		<ee:transform doc:name="update contacts" doc:id="3afee4a7-dd3d-47e1-b923-71079953e928" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
